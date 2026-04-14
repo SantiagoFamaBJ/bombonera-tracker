@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --boca-azul: #003082;
+  --boca-amarillo: #F5C900;
+  --boca-dark: #001a4d;
+  --boca-light: #1a4db3;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-body), sans-serif;
+  background: var(--boca-dark);
+  color: white;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display), sans-serif;
+  letter-spacing: 0.04em;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #001a4d; }
+::-webkit-scrollbar-thumb { background: #F5C900; border-radius: 3px; }
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadein { animation: fadeIn 0.3s ease-out; }
