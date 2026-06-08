@@ -32,41 +32,39 @@ export default function Home() {
   const statsGlobal = calcularStats(partidos)
   const statsPorAño = calcularStatsPorAño(partidos)
   const años = statsPorAño.map(s => s.año)
-
   const partidosFiltrados = añoFiltro
     ? partidos.filter(p => new Date(p.fecha).getFullYear() === añoFiltro)
     : partidos
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--boca-dark)' }}>
       {/* Header */}
-      <header className="bg-boca-azul border-b-4 border-boca-amarillo px-4 py-3 flex items-center gap-3">
-        <Image
-          src="/estadio.png"
-          alt="La Bombonera"
-          width={40}
-          height={40}
-          className="object-contain"
-        />
+      <header style={{ background: 'linear-gradient(135deg, #003082 0%, #001a4d 100%)', borderBottom: '3px solid #F5C900' }}
+        className="px-4 py-3 flex items-center gap-3">
+        <div className="relative">
+          <Image src="/estadio.png" alt="La Bombonera" width={44} height={44} className="object-contain drop-shadow-lg" />
+        </div>
         <div>
-          <h1 className="font-display text-boca-amarillo text-xl font-bold leading-none">
+          <h1 className="font-display text-boca-amarillo font-bold leading-none tracking-widest"
+            style={{ fontSize: '1.1rem', textShadow: '0 2px 8px rgba(245,201,0,0.3)' }}>
             LA BOMBONERA
           </h1>
-          <p className="text-blue-200 text-xs font-body">Tracker de asistencia</p>
+          <p style={{ color: '#7fa3d4', fontSize: '0.7rem', letterSpacing: '0.15em' }} className="font-display uppercase">
+            Tracker de asistencia
+          </p>
         </div>
         <button
           onClick={() => setVista('nuevo')}
-          className="ml-auto bg-boca-amarillo text-boca-dark font-display font-bold px-4 py-2 rounded-lg text-sm tracking-wide active:scale-95 transition-transform"
+          style={{ background: 'linear-gradient(135deg, #F5C900, #e6b800)', color: '#00061a' }}
+          className="ml-auto font-display font-bold px-4 py-2 rounded-lg text-sm tracking-wide active:scale-95 transition-transform shadow-lg"
         >
           + PARTIDO
         </button>
       </header>
 
-      {/* Nav */}
       <NavBar vista={vista} setVista={setVista} />
 
-      {/* Content */}
-      <main className="flex-1 p-4 space-y-4 animate-fadein">
+      <main className="flex-1 p-4 space-y-4 animate-fadein max-w-2xl mx-auto w-full">
         {loading ? (
           <div className="flex items-center justify-center h-40">
             <div className="w-10 h-10 border-4 border-boca-amarillo border-t-transparent rounded-full animate-spin" />
@@ -78,35 +76,28 @@ export default function Home() {
           </>
         ) : vista === 'partidos' ? (
           <>
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              <button
-                onClick={() => setAñoFiltro(null)}
-                className={`px-3 py-1.5 rounded-full text-sm font-display font-bold whitespace-nowrap transition-colors ${
-                  !añoFiltro ? 'bg-boca-amarillo text-boca-dark' : 'bg-boca-light text-white'
-                }`}
-              >
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              <button onClick={() => setAñoFiltro(null)}
+                className="px-3 py-1.5 rounded-full text-xs font-display font-bold whitespace-nowrap transition-all"
+                style={!añoFiltro ? { background: '#F5C900', color: '#00061a' } : { background: '#0a1f4e', color: '#7fa3d4', border: '1px solid #1a3a6e' }}>
                 TODOS
               </button>
               {años.map(a => (
-                <button
-                  key={a}
-                  onClick={() => setAñoFiltro(a)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-display font-bold whitespace-nowrap transition-colors ${
-                    añoFiltro === a ? 'bg-boca-amarillo text-boca-dark' : 'bg-boca-light text-white'
-                  }`}
-                >
+                <button key={a} onClick={() => setAñoFiltro(a)}
+                  className="px-3 py-1.5 rounded-full text-xs font-display font-bold whitespace-nowrap transition-all"
+                  style={añoFiltro === a ? { background: '#F5C900', color: '#00061a' } : { background: '#0a1f4e', color: '#7fa3d4', border: '1px solid #1a3a6e' }}>
                   {a}
                 </button>
               ))}
             </div>
             <ListaPartidos partidos={partidosFiltrados} onRefresh={fetchPartidos} />
           </>
-        ) : vista === 'nuevo' ? (
+        ) : (
           <FormPartido
             onSuccess={() => { fetchPartidos(); setVista('partidos') }}
             onCancel={() => setVista(partidos.length > 0 ? 'partidos' : 'inicio')}
           />
-        ) : null}
+        )}
       </main>
     </div>
   )
