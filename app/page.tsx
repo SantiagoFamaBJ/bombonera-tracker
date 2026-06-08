@@ -22,7 +22,7 @@ export default function Home() {
     const { data } = await supabase
       .from('partidos')
       .select('*')
-      .order('fecha', { ascending: false })
+      .order('fecha', { ascending: true })
     if (data) setPartidos(data)
     setLoading(false)
   }
