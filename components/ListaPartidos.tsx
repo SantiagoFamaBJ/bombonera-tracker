@@ -16,84 +16,81 @@ export default function ListaPartidos({ partidos, onRefresh }: { partidos: Parti
   }
 
   if (editando) {
-    return (
-      <FormPartido
-        partido={editando}
-        onSuccess={() => { setEditando(null); onRefresh() }}
-        onCancel={() => setEditando(null)}
-      />
-    )
+    return <FormPartido partido={editando} onSuccess={() => { setEditando(null); onRefresh() }} onCancel={() => setEditando(null)} />
   }
 
   return (
     <div className="space-y-2">
       {partidos.map(p => {
         const resultado = parseResultado(p.resultado)
-        const colorResultado =
-          resultado === 'V' ? 'text-green-400' :
-          resultado === 'E' ? 'text-yellow-300' : 'text-red-400'
-        const bgBadge =
-          resultado === 'V' ? 'bg-green-900/60' :
-          resultado === 'E' ? 'bg-yellow-900/60' : 'bg-red-900/60'
+        const isV = resultado === 'V'
+        const isE = resultado === 'E'
+        const isD = resultado === 'D'
+
+        const resultColor = isV ? '#22c55e' : isE ? '#eab308' : '#ef4444'
+        const resultBg = isV ? 'rgba(34,197,94,0.1)' : isE ? 'rgba(234,179,8,0.1)' : 'rgba(239,68,68,0.1)'
+        const resultBorder = isV ? 'rgba(34,197,94,0.3)' : isE ? 'rgba(234,179,8,0.3)' : 'rgba(239,68,68,0.3)'
+        const resultLabel = isV ? 'V' : isE ? 'E' : 'D'
 
         const fecha = new Date(p.fecha + 'T12:00:00')
-        const fechaStr = fecha.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        const fechaStr = fecha.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: '2-digit' })
 
         return (
-          <div key={p.id} className="bg-boca-azul rounded-xl p-3 border border-blue-700 flex items-center gap-3 animate-fadein">
-            {/* Asistencia dot */}
-            <div className={`w-3 h-3 rounded-full flex-shrink-0 ${p.fui ? 'bg-green-400' : 'bg-red-500'}`} />
+          <div key={p.id} style={{ background: '#020e2e', border: '1px solid #0d2560', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px' }}
+            className="animate-fadein">
+            {/* Asistencia badge */}
+            <div style={{
+              width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0,
+              background: p.fui ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
+              border: `1px solid ${p.fui ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '0.6rem', fontWeight: 'bold', letterSpacing: '0.05em',
+              color: p.fui ? '#22c55e' : '#ef4444',
+              fontFamily: 'var(--font-display)'
+            }}>
+              {p.fui ? 'FUI' : 'NO'}
+            </div>
 
             {/* Info */}
-            <div className="flex-1 min-w-0">
-              <p className="font-display font-bold text-white text-sm truncate">{p.rival}</p>
-              <p className="text-blue-300 text-xs">{fechaStr}</p>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ color: 'white', fontWeight: 'bold', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                className="font-display">{p.rival}</p>
+              <p style={{ color: '#3d6499', fontSize: '0.65rem', marginTop: '1px' }} className="font-display">{fechaStr}</p>
             </div>
 
             {/* Resultado */}
-            <div className={`${bgBadge} rounded-lg px-2.5 py-1 text-center flex-shrink-0`}>
-              <p className={`font-display font-bold text-base ${colorResultado}`}>{p.resultado}</p>
+            <div style={{ background: resultBg, border: `1px solid ${resultBorder}`, borderRadius: '10px', padding: '6px 10px', textAlign: 'center', flexShrink: 0 }}>
+              <p style={{ color: resultColor, fontSize: '0.85rem', fontWeight: 'bold', lineHeight: 1 }} className="font-display">{p.resultado}</p>
+              <p style={{ color: resultColor, fontSize: '0.5rem', letterSpacing: '0.15em', marginTop: '2px', opacity: 0.8 }} className="font-display">{resultLabel}</p>
             </div>
 
             {/* Acciones */}
             <div className="flex gap-1">
-              <button
-                onClick={() => setEditando(p)}
-                className="text-blue-300 hover:text-boca-amarillo p-1.5 rounded-lg transition-colors"
-              >
-                ✏️
-              </button>
+              <button onClick={() => setEditando(p)}
+                style={{ color: '#3d6499', padding: '6px', borderRadius: '8px', fontSize: '0.8rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                className="hover:text-boca-amarillo transition-colors">✏️</button>
               {confirmDelete === p.id ? (
                 <div className="flex gap-1">
-                  <button
-                    onClick={() => eliminar(p.id)}
-                    className="bg-red-600 text-white text-xs px-2 py-1 rounded-lg font-display font-bold"
-                  >
-                    SÍ
-                  </button>
-                  <button
-                    onClick={() => setConfirmDelete(null)}
-                    className="bg-blue-700 text-white text-xs px-2 py-1 rounded-lg font-display font-bold"
-                  >
-                    NO
-                  </button>
+                  <button onClick={() => eliminar(p.id)}
+                    style={{ background: '#ef4444', color: 'white', fontSize: '0.6rem', padding: '4px 8px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
+                    className="font-display font-bold">SÍ</button>
+                  <button onClick={() => setConfirmDelete(null)}
+                    style={{ background: '#0a1f4e', color: 'white', fontSize: '0.6rem', padding: '4px 8px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
+                    className="font-display font-bold">NO</button>
                 </div>
               ) : (
-                <button
-                  onClick={() => setConfirmDelete(p.id)}
-                  className="text-blue-400 hover:text-red-400 p-1.5 rounded-lg transition-colors"
-                >
-                  🗑️
-                </button>
+                <button onClick={() => setConfirmDelete(p.id)}
+                  style={{ color: '#3d6499', padding: '6px', borderRadius: '8px', fontSize: '0.8rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  className="hover:text-red-400 transition-colors">🗑️</button>
               )}
             </div>
           </div>
         )
       })}
       {partidos.length === 0 && (
-        <div className="text-center py-10 text-blue-400 font-body">
+        <div className="text-center py-10" style={{ color: '#3d6499' }}>
           <p className="text-4xl mb-2">⚽</p>
-          <p>No hay partidos para mostrar</p>
+          <p className="font-body text-sm">No hay partidos para mostrar</p>
         </div>
       )}
     </div>
