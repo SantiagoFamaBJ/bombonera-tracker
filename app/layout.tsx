@@ -8,6 +8,9 @@ const barlow = Barlow({ subsets: ['latin'], variable: '--font-body', weight: ['4
 export const metadata: Metadata = {
   title: 'La Bombonera Tracker',
   description: 'Seguimiento de asistencia a La Bombonera',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { supabase, Partido } from '@/lib/supabase'
 import { calcularStats, calcularStatsPorAño } from '@/lib/stats'
 import StatsGlobales from '@/components/StatsGlobales'
@@ -39,8 +40,14 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-boca-azul border-b-4 border-boca-amarillo px-4 py-4 flex items-center gap-3">
-        <div className="text-3xl">🏟️</div>
+      <header className="bg-boca-azul border-b-4 border-boca-amarillo px-4 py-3 flex items-center gap-3">
+        <Image
+          src="/estadio.png"
+          alt="La Bombonera"
+          width={40}
+          height={40}
+          className="object-contain"
+        />
         <div>
           <h1 className="font-display text-boca-amarillo text-xl font-bold leading-none">
             LA BOMBONERA
@@ -71,7 +78,6 @@ export default function Home() {
           </>
         ) : vista === 'partidos' ? (
           <>
-            {/* Filtro por año */}
             <div className="flex gap-2 overflow-x-auto pb-1">
               <button
                 onClick={() => setAñoFiltro(null)}
