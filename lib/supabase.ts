@@ -11,5 +11,6 @@ export type Partido = {
   rival: string
   resultado: string
   fui: boolean
+  competicion?: string | null
   created_at: string
 }

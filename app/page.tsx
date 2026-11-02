@@ -8,9 +8,11 @@ import StatsGlobales from '@/components/StatsGlobales'
 import StatsAnuales from '@/components/StatsAnuales'
 import ListaPartidos from '@/components/ListaPartidos'
 import FormPartido from '@/components/FormPartido'
+import H2H from '@/components/H2H'
+import Torneos from '@/components/Torneos'
 import NavBar from '@/components/NavBar'
 
-type Vista = 'inicio' | 'partidos' | 'nuevo'
+type Vista = 'inicio' | 'partidos' | 'h2h' | 'torneos' | 'nuevo'
 
 export default function Home() {
   const [partidos, setPartidos] = useState<Partido[]>([])
@@ -92,6 +94,10 @@ export default function Home() {
             </div>
             <ListaPartidos partidos={partidosFiltrados} onRefresh={fetchPartidos} />
           </>
+        ) : vista === 'h2h' ? (
+          <H2H partidos={partidos} />
+        ) : vista === 'torneos' ? (
+          <Torneos partidos={partidos} onRefresh={fetchPartidos} />
         ) : (
           <FormPartido
             onSuccess={() => { fetchPartidos(); setVista('partidos') }}

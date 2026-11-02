@@ -87,7 +87,7 @@ export default function StatsAnuales({ statsPorAño }: { statsPorAño: AñoStats
                 <div className="space-y-1.5">
                   {partidos
                     .slice()
-                    .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+                    .sort((a, b) => a.fecha.localeCompare(b.fecha))
                     .map(p => {
                       const res = parseResultado(p.resultado)
                       const resColor = res === 'V' ? '#22c55e' : res === 'E' ? '#eab308' : '#ef4444'

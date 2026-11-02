@@ -55,7 +55,7 @@ export default function ListaPartidos({ partidos, onRefresh }: { partidos: Parti
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ color: 'white', fontWeight: 'bold', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
                 className="font-display">{p.rival}</p>
-              <p style={{ color: '#3d6499', fontSize: '0.65rem', marginTop: '1px' }} className="font-display">{fechaStr}</p>
+              <p style={{ color: '#3d6499', fontSize: '0.65rem', marginTop: '1px' }} className="font-display">{fechaStr}{p.competicion ? ` · ${p.competicion}` : ''}</p>
             </div>
 
             {/* Resultado */}

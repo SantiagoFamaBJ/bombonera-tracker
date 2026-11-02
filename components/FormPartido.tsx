@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { supabase, Partido } from '@/lib/supabase'
+import { COMPETICIONES } from '@/lib/competiciones'
 
 type Props = { partido?: Partido; onSuccess: () => void; onCancel: () => void }
 
@@ -10,6 +11,7 @@ export default function FormPartido({ partido, onSuccess, onCancel }: Props) {
   const [rival, setRival] = useState(partido?.rival ?? '')
   const [resultado, setResultado] = useState(partido?.resultado ?? '')
   const [fui, setFui] = useState(partido?.fui ?? true)
+  const [competicion, setCompeticion] = useState(partido?.competicion ?? '')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -18,7 +20,11 @@ export default function FormPartido({ partido, onSuccess, onCancel }: Props) {
     if (!resultado.trim()) return setError('Ingresá el resultado (ej: 2-0)')
     if (!/^\d+-\d+$/.test(resultado.trim())) return setError('Formato inválido. Usá: 2-0')
     setLoading(true); setError('')
-    const data = { fecha, rival: rival.trim(), resultado: resultado.trim(), fui }
+    const data: { fecha: string; rival: string; resultado: string; fui: boolean; competicion?: string | null } = {
+      fecha, rival: rival.trim(), resultado: resultado.trim(), fui,
+    }
+    if (competicion.trim()) data.competicion = competicion.trim()
+    else if (partido?.competicion) data.competicion = null
     const { error: err } = partido
       ? await supabase.from('partidos').update(data).eq('id', partido.id)
       : await supabase.from('partidos').insert([data])
@@ -58,6 +64,15 @@ export default function FormPartido({ partido, onSuccess, onCancel }: Props) {
           <input type="text" value={resultado} onChange={e => setResultado(e.target.value)}
             placeholder="Ej: 2-0" style={{ ...inputStyle, color: resultado ? 'white' : '#3d6499' }} />
           <p style={{ color: '#3d6499', fontSize: '0.6rem', marginTop: '4px' }} className="font-display">Primero los goles de Boca</p>
+        </div>
+
+        <div>
+          <label style={labelStyle} className="font-display">TORNEO (OPCIONAL)</label>
+          <input type="text" list="competiciones" value={competicion} onChange={e => setCompeticion(e.target.value)}
+            placeholder="Ej: Copa Libertadores" style={{ ...inputStyle, color: competicion ? 'white' : '#3d6499' }} />
+          <datalist id="competiciones">
+            {COMPETICIONES.map(c => <option key={c} value={c} />)}
+          </datalist>
         </div>
 
         <div>
