@@ -93,16 +93,16 @@ export default function Torneos({ partidos, onRefresh }: { partidos: Partido[]; 
                 <div style={{ width: `${s.pctAsistencia}%`, height: '100%', background: 'linear-gradient(90deg, #22c55e, #16a34a)', borderRadius: '999px' }} />
               </div>
 
-              <p style={{ color: '#3d6499', fontSize: '0.55rem', letterSpacing: '0.2em', marginBottom: '6px' }} className="font-display">RESULTADOS</p>
+              <p style={{ color: '#3d6499', fontSize: '0.55rem', letterSpacing: '0.2em', marginBottom: '6px' }} className="font-display">RESULTADOS (CUANDO FUI)</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px' }}>
                 <Caja valor={s.victorias} label="VICTORIAS" color={COLOR.V} fondo={FONDO.V} borde={BORDE.V} />
                 <Caja valor={s.empates} label="EMPATES" color={COLOR.E} fondo={FONDO.E} borde={BORDE.E} />
                 <Caja valor={s.derrotas} label="DERROTAS" color={COLOR.D} fondo={FONDO.D} borde={BORDE.D} />
               </div>
               <div style={{ background: '#0a1f4e', borderRadius: '999px', height: '5px', overflow: 'hidden', display: 'flex', marginTop: '8px' }}>
-                <div style={{ width: `${(s.victorias / s.total) * 100}%`, background: COLOR.V }} />
-                <div style={{ width: `${(s.empates / s.total) * 100}%`, background: COLOR.E }} />
-                <div style={{ width: `${(s.derrotas / s.total) * 100}%`, background: COLOR.D }} />
+                <div style={{ width: `${(s.victorias / Math.max(s.fui, 1)) * 100}%`, background: COLOR.V }} />
+                <div style={{ width: `${(s.empates / Math.max(s.fui, 1)) * 100}%`, background: COLOR.E }} />
+                <div style={{ width: `${(s.derrotas / Math.max(s.fui, 1)) * 100}%`, background: COLOR.D }} />
               </div>
             </div>
 

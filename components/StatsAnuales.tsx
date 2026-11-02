@@ -57,7 +57,7 @@ export default function StatsAnuales({ statsPorAño }: { statsPorAño: AñoStats
               </div>
 
               {/* RESULTADOS */}
-              <p style={{ color: '#3d6499', fontSize: '0.55rem', letterSpacing: '0.2em', marginBottom: '6px' }} className="font-display">RESULTADOS</p>
+              <p style={{ color: '#3d6499', fontSize: '0.55rem', letterSpacing: '0.2em', marginBottom: '6px' }} className="font-display">RESULTADOS (CUANDO FUI)</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px' }}>
                 <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: '10px', padding: '10px 4px', textAlign: 'center' }}>
                   <p style={{ color: '#22c55e', fontSize: '1.5rem', lineHeight: 1 }} className="font-display font-bold">{stats.victorias}</p>
@@ -74,9 +74,9 @@ export default function StatsAnuales({ statsPorAño }: { statsPorAño: AñoStats
               </div>
               {/* Barra V/E/D */}
               <div style={{ background: '#0a1f4e', borderRadius: '999px', height: '5px', overflow: 'hidden', display: 'flex', marginTop: '8px' }}>
-                <div style={{ width: `${(stats.victorias/stats.total)*100}%`, background: '#22c55e' }} />
-                <div style={{ width: `${(stats.empates/stats.total)*100}%`, background: '#eab308' }} />
-                <div style={{ width: `${(stats.derrotas/stats.total)*100}%`, background: '#ef4444' }} />
+                <div style={{ width: `${(stats.victorias/Math.max(stats.fui,1))*100}%`, background: '#22c55e' }} />
+                <div style={{ width: `${(stats.empates/Math.max(stats.fui,1))*100}%`, background: '#eab308' }} />
+                <div style={{ width: `${(stats.derrotas/Math.max(stats.fui,1))*100}%`, background: '#ef4444' }} />
               </div>
             </div>
 

@@ -28,22 +28,21 @@ function chip(activo: boolean): CSSProperties {
 export default function H2H({ partidos, onRefresh }: { partidos: Partido[]; onRefresh: () => void }) {
   const [unirAbierto, setUnirAbierto] = useState(false)
   const [busqueda, setBusqueda] = useState('')
-  const [soloFui, setSoloFui] = useState(false)
   const [orden, setOrden] = useState<Orden>('jugados')
   const [expandido, setExpandido] = useState<string | null>(null)
 
   const rivales = useMemo(() => {
-    const base = soloFui ? partidos.filter(p => p.fui) : partidos
+    const base = partidos
     const q = normalizarTexto(busqueda)
-    const lista = calcularH2H(base).filter(r => r.stats.total > 0).filter(r => !q || normalizarTexto(r.nombre).includes(q))
+    const lista = calcularH2H(base).filter(r => r.stats.fui > 0).filter(r => !q || normalizarTexto(r.nombre).includes(q))
     return lista.sort((a, b) =>
       orden === 'az'
         ? a.nombre.localeCompare(b.nombre, 'es')
-        : b.stats.total - a.stats.total || a.nombre.localeCompare(b.nombre, 'es')
+        : b.stats.fui - a.stats.fui || a.nombre.localeCompare(b.nombre, 'es')
     )
-  }, [partidos, soloFui, busqueda, orden])
+  }, [partidos, busqueda, orden])
 
-  const totalPartidos = rivales.reduce((acc, r) => acc + r.stats.total, 0)
+  const totalPartidos = rivales.reduce((acc, r) => acc + r.stats.fui, 0)
 
   return (
     <div className="space-y-3">
@@ -66,14 +65,6 @@ export default function H2H({ partidos, onRefresh }: { partidos: Partido[]; onRe
             outline: 'none',
           }}
         />
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          <button type="button" className="font-display font-bold" style={chip(!soloFui)} onClick={() => setSoloFui(false)}>
-            TODOS LOS PARTIDOS
-          </button>
-          <button type="button" className="font-display font-bold" style={chip(soloFui)} onClick={() => setSoloFui(true)}>
-            SOLO LOS QUE FUI
-          </button>
-        </div>
         <div className="flex gap-2 overflow-x-auto pb-1">
           <button type="button" className="font-display font-bold" style={chip(orden === 'jugados')} onClick={() => setOrden('jugados')}>
             MÁS JUGADOS
@@ -109,7 +100,7 @@ export default function H2H({ partidos, onRefresh }: { partidos: Partido[]; onRe
                     {r.nombre}
                   </p>
                   <p style={{ color: '#3d6499', fontSize: '0.6rem', letterSpacing: '0.12em', marginTop: '2px' }} className="font-display">
-                    {s.total} {s.total === 1 ? 'PARTIDO' : 'PARTIDOS'}
+                    {s.fui} {s.fui === 1 ? 'PARTIDO' : 'PARTIDOS'} · CUANDO FUI
                   </p>
                 </div>
                 <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
@@ -128,9 +119,9 @@ export default function H2H({ partidos, onRefresh }: { partidos: Partido[]; onRe
 
               {/* Barra V/E/D */}
               <div style={{ background: '#0a1f4e', borderRadius: '999px', height: '4px', overflow: 'hidden', display: 'flex', marginTop: '10px' }}>
-                <div style={{ width: `${(s.victorias / s.total) * 100}%`, background: COLOR.V }} />
-                <div style={{ width: `${(s.empates / s.total) * 100}%`, background: COLOR.E }} />
-                <div style={{ width: `${(s.derrotas / s.total) * 100}%`, background: COLOR.D }} />
+                <div style={{ width: `${(s.victorias / Math.max(s.fui, 1)) * 100}%`, background: COLOR.V }} />
+                <div style={{ width: `${(s.empates / Math.max(s.fui, 1)) * 100}%`, background: COLOR.E }} />
+                <div style={{ width: `${(s.derrotas / Math.max(s.fui, 1)) * 100}%`, background: COLOR.D }} />
               </div>
 
               {/* Goles y asistencia */}

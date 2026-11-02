@@ -33,14 +33,30 @@ export function calcularStats(todos: Partido[]) {
   const noFui = total - fui
   const pctAsistencia = total > 0 ? Math.round((fui / total) * 100 * 100) / 100 : 0
 
-  const victorias = partidos.filter(p => parseResultado(p.resultado) === 'V').length
-  const empates = partidos.filter(p => parseResultado(p.resultado) === 'E').length
-  const derrotas = partidos.filter(p => parseResultado(p.resultado) === 'D').length
+  // El historial (V/E/D, efectividad, invictos) cuenta SOLO los partidos a los que fui.
+  const fuiList = partidos.filter(p => p.fui)
+  const victorias = fuiList.filter(p => parseResultado(p.resultado) === 'V').length
+  const empates = fuiList.filter(p => parseResultado(p.resultado) === 'E').length
+  const derrotas = fuiList.filter(p => parseResultado(p.resultado) === 'D').length
 
-  const efectividad = total > 0 ? Math.round(((victorias + empates * 0.5) / total) * 100) : 0
-  const invictos = total > 0 ? Math.round(((victorias + empates) / total) * 100) : 0
+  const efectividad = fui > 0 ? Math.round(((victorias + empates * 0.5) / fui) * 100) : 0
+  const invictos = fui > 0 ? Math.round(((victorias + empates) / fui) * 100) : 0
 
-  return { total, fui, noFui, pctAsistencia, victorias, empates, derrotas, efectividad, invictos }
+  // Cómo le fue a Boca en los partidos a los que NO fui
+  const noList = partidos.filter(p => !p.fui)
+  const nV = noList.filter(p => parseResultado(p.resultado) === 'V').length
+  const nE = noList.filter(p => parseResultado(p.resultado) === 'E').length
+  const nD = noList.filter(p => parseResultado(p.resultado) === 'D').length
+  const sinAsistir = {
+    total: noList.length,
+    victorias: nV,
+    empates: nE,
+    derrotas: nD,
+    efectividad: noList.length > 0 ? Math.round(((nV + nE * 0.5) / noList.length) * 100) : 0,
+    invictos: noList.length > 0 ? Math.round(((nV + nE) / noList.length) * 100) : 0,
+  }
+
+  return { total, fui, noFui, pctAsistencia, victorias, empates, derrotas, efectividad, invictos, sinAsistir }
 }
 
 export function calcularStatsPorAño(partidos: Partido[]) {
@@ -110,6 +126,7 @@ export function calcularH2H(partidos: Partido[]): RivalH2H[] {
     let golesFavor = 0
     let golesContra = 0
     ordenados.forEach(p => {
+      if (!p.fui || p.pandemia) return
       const g = parseGoles(p.resultado)
       if (g) {
         golesFavor += g[0]

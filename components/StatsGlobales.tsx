@@ -4,6 +4,7 @@ type Props = {
   stats: {
     total: number; fui: number; noFui: number; pctAsistencia: number
     victorias: number; empates: number; derrotas: number; efectividad: number; invictos: number
+    sinAsistir: { total: number; victorias: number; empates: number; derrotas: number; efectividad: number; invictos: number }
   }
   total: number
 }
@@ -47,7 +48,7 @@ export default function StatsGlobales({ stats, total }: Props) {
       {/* Historial */}
       <div style={{ background: '#020e2e', border: '1px solid #0d2560', borderRadius: '16px', overflow: 'hidden' }}>
         <div style={{ background: 'linear-gradient(90deg, #003082, #001a4d)', padding: '10px 16px', borderBottom: '1px solid #0d2560' }}>
-          <span style={{ color: '#F5C900', fontSize: '0.65rem', letterSpacing: '0.2em' }} className="font-display font-bold">🏆 HISTORIAL</span>
+          <span style={{ color: '#F5C900', fontSize: '0.65rem', letterSpacing: '0.2em' }} className="font-display font-bold">🏆 HISTORIAL · CUANDO FUI</span>
         </div>
         <div className="p-4 space-y-3">
           {/* V / E / D */}
@@ -58,9 +59,9 @@ export default function StatsGlobales({ stats, total }: Props) {
           </div>
           {/* Barras V/E/D */}
           <div style={{ background: '#0a1f4e', borderRadius: '999px', height: '6px', overflow: 'hidden', display: 'flex' }}>
-            <div style={{ width: `${(stats.victorias/stats.total)*100}%`, background: '#22c55e', transition: 'width 1s ease' }} />
-            <div style={{ width: `${(stats.empates/stats.total)*100}%`, background: '#eab308', transition: 'width 1s ease' }} />
-            <div style={{ width: `${(stats.derrotas/stats.total)*100}%`, background: '#ef4444', transition: 'width 1s ease' }} />
+            <div style={{ width: `${(stats.victorias/Math.max(stats.fui,1))*100}%`, background: '#22c55e', transition: 'width 1s ease' }} />
+            <div style={{ width: `${(stats.empates/Math.max(stats.fui,1))*100}%`, background: '#eab308', transition: 'width 1s ease' }} />
+            <div style={{ width: `${(stats.derrotas/Math.max(stats.fui,1))*100}%`, background: '#ef4444', transition: 'width 1s ease' }} />
           </div>
           {/* Efectividad e Invictos */}
           <div className="grid grid-cols-2 gap-2">
@@ -75,6 +76,43 @@ export default function StatsGlobales({ stats, total }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Cuando voy vs cuando no voy */}
+      <div style={{ background: '#020e2e', border: '1px solid #0d2560', borderRadius: '16px', overflow: 'hidden' }}>
+        <div style={{ background: 'linear-gradient(90deg, #003082, #001a4d)', padding: '10px 16px', borderBottom: '1px solid #0d2560' }}>
+          <span style={{ color: '#F5C900', fontSize: '0.65rem', letterSpacing: '0.2em' }} className="font-display font-bold">⚖️ CUANDO VOY VS CUANDO NO VOY</span>
+        </div>
+        <div className="p-4 grid grid-cols-2 gap-3">
+          <Comparacion titulo="✅ CUANDO FUI" color="#22c55e" borde="rgba(34,197,94,0.3)" fondo="rgba(34,197,94,0.08)"
+            total={stats.fui} v={stats.victorias} e={stats.empates} d={stats.derrotas} efectividad={stats.efectividad} invictos={stats.invictos} />
+          <Comparacion titulo="❌ CUANDO NO FUI" color="#ef4444" borde="rgba(239,68,68,0.3)" fondo="rgba(239,68,68,0.08)"
+            total={stats.sinAsistir.total} v={stats.sinAsistir.victorias} e={stats.sinAsistir.empates} d={stats.sinAsistir.derrotas}
+            efectividad={stats.sinAsistir.efectividad} invictos={stats.sinAsistir.invictos} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Comparacion({ titulo, color, borde, fondo, total, v, e, d, efectividad, invictos }: {
+  titulo: string; color: string; borde: string; fondo: string
+  total: number; v: number; e: number; d: number; efectividad: number; invictos: number
+}) {
+  return (
+    <div style={{ background: fondo, border: `1px solid ${borde}`, borderRadius: '12px', padding: '12px', textAlign: 'center' }}>
+      <p style={{ color, fontSize: '0.6rem', letterSpacing: '0.12em' }} className="font-display font-bold">{titulo}</p>
+      <p style={{ color: 'white', fontSize: '1.1rem', marginTop: '6px' }} className="font-display font-bold">
+        <span style={{ color: '#22c55e' }}>{v}</span>
+        <span style={{ color: '#3d6499' }}> · </span>
+        <span style={{ color: '#eab308' }}>{e}</span>
+        <span style={{ color: '#3d6499' }}> · </span>
+        <span style={{ color: '#ef4444' }}>{d}</span>
+      </p>
+      <p style={{ color: '#3d6499', fontSize: '0.5rem', letterSpacing: '0.15em' }} className="font-display">V · E · D ({total})</p>
+      <p style={{ color: '#F5C900', fontSize: '1.3rem', marginTop: '8px', lineHeight: 1 }} className="font-display font-bold">{efectividad}%</p>
+      <p style={{ color: '#7fa3d4', fontSize: '0.5rem', letterSpacing: '0.15em', marginTop: '2px' }} className="font-display">EFECTIVIDAD</p>
+      <p style={{ color: '#F5C900', fontSize: '1.3rem', marginTop: '8px', lineHeight: 1 }} className="font-display font-bold">{invictos}%</p>
+      <p style={{ color: '#7fa3d4', fontSize: '0.5rem', letterSpacing: '0.15em', marginTop: '2px' }} className="font-display">INVICTOS</p>
     </div>
   )
 }
