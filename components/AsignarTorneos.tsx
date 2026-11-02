@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { supabase, Partido } from '@/lib/supabase'
-import { COMPETICIONES } from '@/lib/competiciones'
+import { COMPETICIONES, canonicoCompeticion } from '@/lib/competiciones'
 import { formatFecha, normalizarTexto, ordenarPorFecha, parseResultado } from '@/lib/stats'
 
 type Props = { partidos: Partido[]; onRefresh: () => void; onClose: () => void }
@@ -34,6 +34,18 @@ export default function AsignarTorneos({ partidos, onRefresh, onClose }: Props) 
       return true
     })
   }, [partidos, busqueda, año, soloSin])
+
+  // Torneos fijos + los que ya creaste a mano
+  const chipsTorneo = useMemo(() => {
+    const lista = COMPETICIONES.slice()
+    partidos.forEach(p => {
+      const c = p.competicion?.trim()
+      if (!c) return
+      const canon = canonicoCompeticion(c)
+      if (lista.indexOf(canon) === -1) lista.push(canon)
+    })
+    return lista
+  }, [partidos])
 
   function toggle(id: string) {
     setSeleccion(prev => {
@@ -197,7 +209,7 @@ export default function AsignarTorneos({ partidos, onRefresh, onClose }: Props) 
           {seleccion.size} SELECCIONADOS
         </p>
         <div className="flex gap-1.5 overflow-x-auto pb-1">
-          {COMPETICIONES.map(c => (
+          {chipsTorneo.map(c => (
             <button key={c} type="button" className="font-display font-bold" style={chip(torneo === c)} onClick={() => setTorneo(c)}>
               {c.toUpperCase()}
             </button>
@@ -227,7 +239,7 @@ export default function AsignarTorneos({ partidos, onRefresh, onClose }: Props) 
           <button
             type="button"
             disabled={guardando || seleccion.size === 0 || !torneo.trim()}
-            onClick={() => aplicar(torneo.trim())}
+            onClick={() => aplicar(canonicoCompeticion(torneo))}
             className="font-display font-bold"
             style={{ padding: '12px', background: 'linear-gradient(135deg, #F5C900, #e6b800)', color: '#00061a', borderRadius: '10px', border: 'none', fontSize: '0.75rem', letterSpacing: '0.08em', opacity: guardando || seleccion.size === 0 || !torneo.trim() ? 0.4 : 1 }}
           >

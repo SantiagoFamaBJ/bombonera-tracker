@@ -95,7 +95,7 @@ export default function Home() {
             <ListaPartidos partidos={partidosFiltrados} onRefresh={fetchPartidos} />
           </>
         ) : vista === 'h2h' ? (
-          <H2H partidos={partidos} />
+          <H2H partidos={partidos} onRefresh={fetchPartidos} />
         ) : vista === 'torneos' ? (
           <Torneos partidos={partidos} onRefresh={fetchPartidos} />
         ) : (

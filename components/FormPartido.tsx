@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { supabase, Partido } from '@/lib/supabase'
-import { COMPETICIONES } from '@/lib/competiciones'
+import { COMPETICIONES, canonicoCompeticion } from '@/lib/competiciones'
+import { NOMBRES_EQUIPOS, canonicalizarRival } from '@/lib/equipos'
 
 type Props = { partido?: Partido; onSuccess: () => void; onCancel: () => void }
 
@@ -21,9 +22,9 @@ export default function FormPartido({ partido, onSuccess, onCancel }: Props) {
     if (!/^\d+-\d+$/.test(resultado.trim())) return setError('Formato inválido. Usá: 2-0')
     setLoading(true); setError('')
     const data: { fecha: string; rival: string; resultado: string; fui: boolean; competicion?: string | null } = {
-      fecha, rival: rival.trim(), resultado: resultado.trim(), fui,
+      fecha, rival: canonicalizarRival(rival), resultado: resultado.trim(), fui,
     }
-    if (competicion.trim()) data.competicion = competicion.trim()
+    if (competicion.trim()) data.competicion = canonicoCompeticion(competicion)
     else if (partido?.competicion) data.competicion = null
     const { error: err } = partido
       ? await supabase.from('partidos').update(data).eq('id', partido.id)
@@ -56,8 +57,11 @@ export default function FormPartido({ partido, onSuccess, onCancel }: Props) {
         </div>
         <div>
           <label style={labelStyle} className="font-display">RIVAL</label>
-          <input type="text" value={rival} onChange={e => setRival(e.target.value)}
-            placeholder="Ej: River Plate" style={{ ...inputStyle, color: rival ? 'white' : '#3d6499' }} />
+          <input type="text" list="equipos" value={rival} onChange={e => setRival(e.target.value)}
+            placeholder="Ej: River" style={{ ...inputStyle, color: rival ? 'white' : '#3d6499' }} />
+          <datalist id="equipos">
+            {NOMBRES_EQUIPOS.map(n => <option key={n} value={n} />)}
+          </datalist>
         </div>
         <div>
           <label style={labelStyle} className="font-display">RESULTADO</label>
@@ -69,7 +73,7 @@ export default function FormPartido({ partido, onSuccess, onCancel }: Props) {
         <div>
           <label style={labelStyle} className="font-display">TORNEO (OPCIONAL)</label>
           <input type="text" list="competiciones" value={competicion} onChange={e => setCompeticion(e.target.value)}
-            placeholder="Ej: Copa Libertadores" style={{ ...inputStyle, color: competicion ? 'white' : '#3d6499' }} />
+            placeholder="Ej: Libertadores" style={{ ...inputStyle, color: competicion ? 'white' : '#3d6499' }} />
           <datalist id="competiciones">
             {COMPETICIONES.map(c => <option key={c} value={c} />)}
           </datalist>

@@ -2,6 +2,7 @@
 
 import { useMemo, useState, CSSProperties } from 'react'
 import { Partido } from '@/lib/supabase'
+import UnirEquipos from './UnirEquipos'
 import { calcularH2H, formatFecha, normalizarTexto, parseResultado } from '@/lib/stats'
 
 type Orden = 'jugados' | 'az'
@@ -24,7 +25,8 @@ function chip(activo: boolean): CSSProperties {
   }
 }
 
-export default function H2H({ partidos }: { partidos: Partido[] }) {
+export default function H2H({ partidos, onRefresh }: { partidos: Partido[]; onRefresh: () => void }) {
+  const [unirAbierto, setUnirAbierto] = useState(false)
   const [busqueda, setBusqueda] = useState('')
   const [soloFui, setSoloFui] = useState(false)
   const [orden, setOrden] = useState<Orden>('jugados')
@@ -79,7 +81,11 @@ export default function H2H({ partidos }: { partidos: Partido[] }) {
           <button type="button" className="font-display font-bold" style={chip(orden === 'az')} onClick={() => setOrden('az')}>
             A–Z
           </button>
+          <button type="button" className="font-display font-bold" style={chip(unirAbierto)} onClick={() => setUnirAbierto(!unirAbierto)}>
+            🔗 UNIR EQUIPOS
+          </button>
         </div>
+        {unirAbierto && <UnirEquipos partidos={partidos} onRefresh={onRefresh} />}
         <p style={{ color: '#3d6499', fontSize: '0.6rem', letterSpacing: '0.15em', paddingLeft: '2px' }} className="font-display">
           {rivales.length} RIVALES · {totalPartidos} PARTIDOS
         </p>

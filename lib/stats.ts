@@ -1,5 +1,9 @@
 import { Partido } from './supabase'
-import { SIN_TORNEO, SIN_TORNEO_KEY } from './competiciones'
+import { SIN_TORNEO, SIN_TORNEO_KEY, canonicoCompeticion } from './competiciones'
+import { canonicalizarRival } from './equipos'
+import { normalizarTexto } from './texto'
+
+export { normalizarTexto }
 
 export function parseResultado(resultado: string): 'V' | 'E' | 'D' | null {
   const partes = resultado.trim().split('-')
@@ -51,16 +55,6 @@ export function calcularStatsPorAño(partidos: Partido[]) {
 
 // ---------- Helpers ----------
 
-// "Vélez" y "velez" → misma clave
-export function normalizarTexto(texto: string): string {
-  return texto
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
 // "2025-02-23" → "23/02/25" (sin pasar por Date para evitar corrimientos de zona horaria)
 export function formatFecha(fecha: string): string {
   const [y, m, d] = fecha.split('-')
@@ -108,7 +102,7 @@ export type RivalH2H = {
 }
 
 export function calcularH2H(partidos: Partido[]): RivalH2H[] {
-  const grupos = agrupar(partidos, p => normalizarTexto(p.rival))
+  const grupos = agrupar(partidos, p => normalizarTexto(canonicalizarRival(p.rival)))
   return Array.from(grupos.entries()).map(([key, ps]) => {
     const ordenados = ordenarPorFecha(ps)
     let golesFavor = 0
@@ -122,7 +116,7 @@ export function calcularH2H(partidos: Partido[]): RivalH2H[] {
     })
     return {
       key,
-      nombre: nombreMasUsado(ordenados.map(p => p.rival.trim())),
+      nombre: nombreMasUsado(ordenados.map(p => canonicalizarRival(p.rival))),
       stats: calcularStats(ordenados),
       golesFavor,
       golesContra,
@@ -143,7 +137,7 @@ export type CompeticionStats = {
 export function calcularStatsPorCompeticion(partidos: Partido[]): CompeticionStats[] {
   const grupos = agrupar(partidos, p => {
     const c = p.competicion?.trim()
-    return c ? normalizarTexto(c) : SIN_TORNEO_KEY
+    return c ? normalizarTexto(canonicoCompeticion(c)) : SIN_TORNEO_KEY
   })
   return Array.from(grupos.entries())
     .map(([key, ps]) => {
@@ -151,7 +145,7 @@ export function calcularStatsPorCompeticion(partidos: Partido[]): CompeticionSta
       const nombre =
         key === SIN_TORNEO_KEY
           ? SIN_TORNEO
-          : nombreMasUsado(ordenados.map(p => (p.competicion ?? '').trim()))
+          : nombreMasUsado(ordenados.map(p => canonicoCompeticion(p.competicion ?? '')))
       return { key, nombre, stats: calcularStats(ordenados), partidos: ordenados }
     })
     .sort((a, b) => {
