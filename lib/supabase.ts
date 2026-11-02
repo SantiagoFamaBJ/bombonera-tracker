@@ -11,6 +11,7 @@ export type Partido = {
   rival: string
   resultado: string
   fui: boolean
+  pandemia?: boolean | null
   competicion?: string | null
   created_at: string
 }

@@ -32,7 +32,7 @@ export default function StatsAnuales({ statsPorAño }: { statsPorAño: AñoStats
             >
               <span style={{ color: 'white', fontSize: '1.1rem' }} className="font-display font-bold">{año}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: '#3d6499', fontSize: '0.6rem', letterSpacing: '0.1em' }} className="font-display">{stats.total} partidos</span>
+                <span style={{ color: '#3d6499', fontSize: '0.6rem', letterSpacing: '0.1em' }} className="font-display">{stats.total} partidos{partidos.length > stats.total ? ` (+${partidos.length - stats.total} 🦠)` : ''}</span>
                 <span style={{ color: '#F5C900', fontSize: '0.75rem', transition: 'transform 0.2s', display: 'inline-block', transform: abierto ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
               </div>
             </button>
@@ -99,8 +99,8 @@ export default function StatsAnuales({ statsPorAño }: { statsPorAño: AñoStats
                       return (
                         <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#040f2a', borderRadius: '8px', padding: '8px 10px' }}>
                           {/* Asistencia */}
-                          <div style={{ width: '28px', height: '28px', borderRadius: '6px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.55rem', fontWeight: 'bold', letterSpacing: '0.05em', fontFamily: 'var(--font-display)', background: p.fui ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${p.fui ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, color: p.fui ? '#22c55e' : '#ef4444' }}>
-                            {p.fui ? 'FUI' : 'NO'}
+                          <div style={{ width: '28px', height: '28px', borderRadius: '6px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.55rem', fontWeight: 'bold', letterSpacing: '0.05em', fontFamily: 'var(--font-display)', background: p.pandemia ? 'rgba(127,163,212,0.12)' : p.fui ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)', border: `1px solid ${p.pandemia ? 'rgba(127,163,212,0.3)' : p.fui ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, color: p.pandemia ? '#7fa3d4' : p.fui ? '#22c55e' : '#ef4444' }}>
+                            {p.pandemia ? '🦠' : p.fui ? 'FUI' : 'NO'}
                           </div>
                           {/* Fecha */}
                           <span style={{ color: '#3d6499', fontSize: '0.65rem', flexShrink: 0, width: '32px' }} className="font-display">{fechaStr}</span>

@@ -41,21 +41,21 @@ export default function ListaPartidos({ partidos, onRefresh }: { partidos: Parti
             {/* Asistencia badge */}
             <div style={{
               width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0,
-              background: p.fui ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
-              border: `1px solid ${p.fui ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
+              background: p.pandemia ? 'rgba(127,163,212,0.12)' : p.fui ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
+              border: `1px solid ${p.pandemia ? 'rgba(127,163,212,0.3)' : p.fui ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '0.6rem', fontWeight: 'bold', letterSpacing: '0.05em',
-              color: p.fui ? '#22c55e' : '#ef4444',
+              color: p.pandemia ? '#7fa3d4' : p.fui ? '#22c55e' : '#ef4444',
               fontFamily: 'var(--font-display)'
             }}>
-              {p.fui ? 'FUI' : 'NO'}
+              {p.pandemia ? '🦠' : p.fui ? 'FUI' : 'NO'}
             </div>
 
             {/* Info */}
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ color: 'white', fontWeight: 'bold', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
                 className="font-display">{p.rival}</p>
-              <p style={{ color: '#3d6499', fontSize: '0.65rem', marginTop: '1px' }} className="font-display">{fechaStr}{p.competicion ? ` · ${p.competicion}` : ''}</p>
+              <p style={{ color: '#3d6499', fontSize: '0.65rem', marginTop: '1px' }} className="font-display">{fechaStr}{p.competicion ? ` · ${p.competicion}` : ''}{p.pandemia ? ' · pandemia (sin público)' : ''}</p>
             </div>
 
             {/* Resultado */}

@@ -35,7 +35,7 @@ export default function H2H({ partidos, onRefresh }: { partidos: Partido[]; onRe
   const rivales = useMemo(() => {
     const base = soloFui ? partidos.filter(p => p.fui) : partidos
     const q = normalizarTexto(busqueda)
-    const lista = calcularH2H(base).filter(r => !q || normalizarTexto(r.nombre).includes(q))
+    const lista = calcularH2H(base).filter(r => r.stats.total > 0).filter(r => !q || normalizarTexto(r.nombre).includes(q))
     return lista.sort((a, b) =>
       orden === 'az'
         ? a.nombre.localeCompare(b.nombre, 'es')
@@ -163,12 +163,12 @@ export default function H2H({ partidos, onRefresh }: { partidos: Partido[]; onRe
                           width: '28px', height: '28px', borderRadius: '6px', flexShrink: 0,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: '0.55rem', fontWeight: 'bold',
-                          background: p.fui ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
-                          border: `1px solid ${p.fui ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
-                          color: p.fui ? '#22c55e' : '#ef4444',
+                          background: p.pandemia ? 'rgba(127,163,212,0.12)' : p.fui ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
+                          border: `1px solid ${p.pandemia ? 'rgba(127,163,212,0.3)' : p.fui ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                          color: p.pandemia ? '#7fa3d4' : p.fui ? '#22c55e' : '#ef4444',
                         }}
                       >
-                        {p.fui ? 'FUI' : 'NO'}
+                        {p.pandemia ? '🦠' : p.fui ? 'FUI' : 'NO'}
                       </div>
                       <span style={{ color: '#7fa3d4', fontSize: '0.7rem', flexShrink: 0 }} className="font-display">{formatFecha(p.fecha)}</span>
                       <span style={{ color: '#3d6499', fontSize: '0.65rem', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} className="font-display">

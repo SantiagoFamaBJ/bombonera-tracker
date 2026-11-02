@@ -25,7 +25,9 @@ export function parseGoles(resultado: string): [number, number] | null {
   return [a, b]
 }
 
-export function calcularStats(partidos: Partido[]) {
+// Los partidos sin público (pandemia) no cuentan en ninguna estadística: se muestran en las listas pero no suman.
+export function calcularStats(todos: Partido[]) {
+  const partidos = todos.filter(p => !p.pandemia)
   const total = partidos.length
   const fui = partidos.filter(p => p.fui).length
   const noFui = total - fui

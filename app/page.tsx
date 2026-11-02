@@ -73,7 +73,7 @@ export default function Home() {
           </div>
         ) : vista === 'inicio' ? (
           <>
-            <StatsGlobales stats={statsGlobal} total={partidos.length} />
+            <StatsGlobales stats={statsGlobal} total={statsGlobal.total} />
             <StatsAnuales statsPorAño={statsPorAño} />
           </>
         ) : vista === 'partidos' ? (

@@ -11,7 +11,7 @@ export default function FormPartido({ partido, onSuccess, onCancel }: Props) {
   const [fecha, setFecha] = useState(partido?.fecha ?? new Date().toISOString().split('T')[0])
   const [rival, setRival] = useState(partido?.rival ?? '')
   const [resultado, setResultado] = useState(partido?.resultado ?? '')
-  const [fui, setFui] = useState(partido?.fui ?? true)
+  const [asistencia, setAsistencia] = useState<'fui' | 'no' | 'pandemia'>(partido?.pandemia ? 'pandemia' : partido?.fui === false ? 'no' : 'fui')
   const [competicion, setCompeticion] = useState(partido?.competicion ?? '')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -21,8 +21,8 @@ export default function FormPartido({ partido, onSuccess, onCancel }: Props) {
     if (!resultado.trim()) return setError('Ingresá el resultado (ej: 2-0)')
     if (!/^\d+-\d+$/.test(resultado.trim())) return setError('Formato inválido. Usá: 2-0')
     setLoading(true); setError('')
-    const data: { fecha: string; rival: string; resultado: string; fui: boolean; competicion?: string | null } = {
-      fecha, rival: canonicalizarRival(rival), resultado: resultado.trim(), fui,
+    const data: { fecha: string; rival: string; resultado: string; fui: boolean; pandemia: boolean; competicion?: string | null } = {
+      fecha, rival: canonicalizarRival(rival), resultado: resultado.trim(), fui: asistencia === 'fui', pandemia: asistencia === 'pandemia',
     }
     if (competicion.trim()) data.competicion = canonicoCompeticion(competicion)
     else if (partido?.competicion) data.competicion = null
@@ -81,28 +81,30 @@ export default function FormPartido({ partido, onSuccess, onCancel }: Props) {
 
         <div>
           <label style={labelStyle} className="font-display">¿FUISTE?</label>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            <button type="button" onClick={() => setFui(true)}
-              style={{
-                padding: '14px', borderRadius: '10px', fontFamily: 'var(--font-display)', fontWeight: 'bold',
-                fontSize: '0.8rem', letterSpacing: '0.1em', cursor: 'pointer', transition: 'all 0.2s',
-                background: fui ? 'rgba(34,197,94,0.15)' : '#0a1f4e',
-                border: fui ? '2px solid rgba(34,197,94,0.6)' : '1px solid #1a3a6e',
-                color: fui ? '#22c55e' : '#3d6499'
-              }}>
-              ✅ SÍ, FUI
-            </button>
-            <button type="button" onClick={() => setFui(false)}
-              style={{
-                padding: '14px', borderRadius: '10px', fontFamily: 'var(--font-display)', fontWeight: 'bold',
-                fontSize: '0.8rem', letterSpacing: '0.1em', cursor: 'pointer', transition: 'all 0.2s',
-                background: !fui ? 'rgba(239,68,68,0.15)' : '#0a1f4e',
-                border: !fui ? '2px solid rgba(239,68,68,0.6)' : '1px solid #1a3a6e',
-                color: !fui ? '#ef4444' : '#3d6499'
-              }}>
-              ❌ NO FUI
-            </button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+            {([
+              ['fui', '✅ FUI', '34,197,94', '#22c55e'],
+              ['no', '❌ NO FUI', '239,68,68', '#ef4444'],
+              ['pandemia', '🦠 PANDEMIA', '127,163,212', '#7fa3d4'],
+            ] as const).map(([valor, texto, rgb, color]) => {
+              const activo = asistencia === valor
+              return (
+                <button key={valor} type="button" onClick={() => setAsistencia(valor)}
+                  style={{
+                    padding: '14px 4px', borderRadius: '10px', fontFamily: 'var(--font-display)', fontWeight: 'bold',
+                    fontSize: '0.7rem', letterSpacing: '0.05em', cursor: 'pointer', transition: 'all 0.2s',
+                    background: activo ? `rgba(${rgb},0.15)` : '#0a1f4e',
+                    border: activo ? `2px solid rgba(${rgb},0.6)` : '1px solid #1a3a6e',
+                    color: activo ? color : '#3d6499'
+                  }}>
+                  {texto}
+                </button>
+              )
+            })}
           </div>
+          {asistencia === 'pandemia' && (
+            <p style={{ color: '#3d6499', fontSize: '0.6rem', marginTop: '6px' }} className="font-display">Sin público: no cuenta en las estadísticas</p>
+          )}
         </div>
 
         {error && (
